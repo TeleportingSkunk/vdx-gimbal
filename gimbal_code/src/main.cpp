@@ -1,15 +1,14 @@
-#include <ServoReal.h>
-
-#include <MeanFilter.h>
+#include <Arduino.h>
 #include <MikroeAccel202.h>
+#include <Servo.h>
 
 int pinX = A0;
 int pinY = A1;
 int pinZ = A2;
 int potPin1 = A3;
-//int potPin2 = A4;
-int servoRollPin = 3;
-int servoPitchPin = 5;
+int potPin2 = A4;
+int servoRollPin = 3; //rename
+int servoPitchPin = 5; //rename
 int buttonPin = 18;
 Servo servoRoll;
 Servo servoPitch;
@@ -17,7 +16,7 @@ Servo servoPitch;
 int LUTservo[32] = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155];
 
 float LUTplatform[32] = [-36.602, -34.067, -31.426, -28.692, -25.880, -23.003, -20.074, -17.108, -14.118, -11.118, -8.121, -5.141, -2.193, 0.710, 3.556, 6.328, 9.015,
-                            11.602, 14.076, 16.423, 18.628, 20.679, 22.562, 24.263, 25.767, 27.063, 28.135, 28.970, 29.554, 29.874, 29.915, 29.665];                          
+                            11.602, 14.076, 16.423, 18.628, 20.679, 22.562, 24.263, 25.767, 27.063, 28.135, 28.970, 29.554, 29.874, 29.915, 29.665];
 */
 
 MikroeAccel202 accel(pinX, pinY, pinZ);
@@ -25,7 +24,7 @@ unsigned int microWriteRoll = 1500;
 unsigned int microWritePitch = 1500;
 void sense(MikroeAccel202 * ACCEL);
 
-float gainRoll = 0.3; //tuned 
+float gainRoll = 0.3; //tuned
 float gainPitch = 0.6;
 float controlSignalRoll, controlSignalPitch;
 float rollBuff[5] = {0};
@@ -33,7 +32,9 @@ float pitchBuff[5] = {0};
 float TdRoll = 5.5; //tuned
 float TdPitch = 5.5;
 int buttonState;
-int prevState = LOW;  
+int prevState = LOW;
+
+void sense(MikroeAccel202 * ACCEL);
 
 void setup()
 {
@@ -47,7 +48,7 @@ void setup()
   pinMode(buttonPin, INPUT);
   delay(1000);
 }
- 
+
 void loop()
 {
     sense(&accel);
@@ -67,16 +68,16 @@ void loop()
       if ( (microWriteRoll-controlSignalRoll) < 0) microWriteRoll = 0;
       else if (microWriteRoll - controlSignalRoll >= 1750) microWriteRoll = 1750;
       else microWriteRoll -= (int)controlSignalRoll;
-      
+
     }
     servoRoll.writeMicroseconds(microWriteRoll);
- 
+
     pitchBuff[0] = pitchBuff[1];
     pitchBuff[1] = pitchBuff[2];
     pitchBuff[2] = pitchBuff[3];
 
       pitchBuff[4] = -accel.roll;
-    
+
     controlSignalPitch = gainPitch*pitchBuff[4] + (pitchBuff[4] - pitchBuff[3])*TdPitch;
     if (!isnan(accel.roll)){
       if( (microWritePitch - controlSignalPitch) < 0) microWritePitch = 0;
@@ -85,7 +86,7 @@ void loop()
     }
     servoPitch.writeMicroseconds(microWritePitch);
     //Serial.print(accel.roll); Serial.print("\t"); Serial.print(accel.pitch); Serial.print("\n");
-    
+
     buttonState = digitalRead(buttonPin);
     if ( buttonState == HIGH && prevState == LOW){
       Serial.println(gainRoll);
@@ -100,6 +101,3 @@ void sense(MikroeAccel202 * ACCEL){
   ACCEL->calcRoll();
   ACCEL->calcPitch();
 }
-
-
-
