@@ -45,22 +45,22 @@ To tune the system:
 3. Wire up two potentiometers (minimum 10k Ohm) as ***5V voltage dividers*** to the pins A3 and A4 and a push button to pin 2.
 4. Run the code and follow the following method:
   1. Set all gains to minimum values.
-    * If the system is already unstable, change your limits
+     * If the system is already unstable, change your limits
   2. Increase the **P gain** until stable oscillations arise upon a step input.
   3. Increase the **D gain** until the damping is critical, i.e. the oscillations have vanished and there's no overshoot
   4. Repeat steps 2 and 3 until the desired rise time is achieved.
-    * Rapid miniscule oscillations are the result of an overlarge **D gain**.
-    * You may have to reset the limits to reach higher (or lower) gains.
+     * Rapid miniscule oscillations are the result of an overlarge **D gain**.
+     * You may have to reset the limits to reach higher (or lower) gains.
   5. Press the button to print the current gain values to the serial monitor. Save these numbers and add them to the control variable initialisation block.
   6. Re-comment the tuning block.
 
 ## Contributors
 * Marko Galevski
-  * [Github](http://github.com/TeleportingSkunk)
-  * [LinkedIn](https://www.linkedin.com/in/marko-galevski/)
+   * [Github](http://github.com/TeleportingSkunk)
+   * [LinkedIn](https://www.linkedin.com/in/marko-galevski/)
 * Tomislav Dimitrievski - Thanks for the help with improving the PCB design
 * Stole Jovanovski - Thanks for developing the mean filter library, and general advice
-  * [LinkedIn](https://www.linkedin.com/in/stole-jovanovski/)
+   * [LinkedIn](https://www.linkedin.com/in/stole-jovanovski/)
 
 ## About ***Vision Dynamix***
 Vision Dynamix is a software company that develops mapping software for unmanned aerial vehicles based on computer vision and 3D scene reconstruction.
