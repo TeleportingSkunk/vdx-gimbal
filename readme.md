@@ -55,7 +55,7 @@ To tune the system:
   6. Re-comment the tuning block.
 
 ## Contributors
-* [Marko Galevski]
+* Marko Galevski
   * [Github](http://github.com/TeleportingSkunk)
   * [LinkedIn](https://www.linkedin.com/in/marko-galevski/)
 * Tomislav Dimitrievski - Thanks for the help with improving the PCB design
