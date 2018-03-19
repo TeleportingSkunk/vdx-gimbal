@@ -16,7 +16,7 @@ const int potPin1 = A3;
 //-----VARIABLES-----//
 /* Object init block. MikroeAccel202 is a custom library for interfacing with the
   ADXL335 for the Mikroelektronika 2.02 breakout board*/
-Servo servoRoll;
+Servo servoRoll; 
   Servo servoPitch;
   MikroeAccel202 accel(pinX, pinY, pinZ);
   float rollBuff[5] = {0}; //data buffers
