@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map For Mikroeaccel202
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MikroeAccel202		    KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+run	                	KEYWORD2
+runLinear               KEYWORD2
+runRotational           KEYWORD2
+read		            KEYWORD2
+calc                    KEYWORD2
+calcRoll                KEYWORD2
+calcPitch               KEYWORD2
+calcYaw                 KEYWORD2
+dumpLinear              KEYWORD2
+dumpRotational          KEYWORD2
+#######################################
+# Constants (LITERAL1)
+#######################################

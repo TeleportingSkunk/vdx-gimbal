@@ -1,0 +1,22 @@
+#######################################
+# Syntax Coloring Map For MeanFilter
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MeanFilter				KEYWORD1
+bufferMean  			KEYWORD1
+AccuMean            	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init		KEYWORD2
+update		KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
