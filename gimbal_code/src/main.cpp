@@ -11,10 +11,9 @@ const int pinX = A0;
 //TUNING PINS
 const int potPin1 = A3;
   const int potPin2 = A4;
-  const int buttonPin = 18;
+  const int buttonPin = 2;
 
 //-----VARIABLES-----//
-
 /* Object init block. MikroeAccel202 is a custom library for interfacing with the
   ADXL335 for the Mikroelektronika 2.02 breakout board*/
 Servo servoRoll;
@@ -38,15 +37,13 @@ unsigned int pulseWidthPitch = 1500;
 /* Control system parameters block. All values MUST be tuned experimentally using
 the provided tune() function and potentiometer inputs to A3 & A4. */
 float errorSignalRoll, errorSignalPitch; //measured error value based on accel readings.
-float PgainRoll = 0.6; //proportional gain for the roll servo
-float PgainPitch = 0.3; //proportional gain for the pitch servo
-float DgainRoll = 5.5; //tuned
-float DgainPitch = 5.5;
-float rollTolerance = 0.5; //in degrees
-float pitchTolerance = 0.5;
+  float PgainRoll = 0.6; //proportional gain for the roll servo
+  float PgainPitch = 0.3; //proportional gain for the pitch servo
+  float DgainRoll = 5.5; //tuned
+  float DgainPitch = 5.5;
+  float rollTolerance = 0.5; //in degrees
+  float pitchTolerance = 0.5;
 
-//int buttonState;
-//int prevState = LOW;
 
 //-----PROTOTYPES-----//
 void sense(MikroeAccel202 * ACCEL);
@@ -109,23 +106,31 @@ void loop()
     }
     servoRoll.writeMicroseconds(pulseWidthRoll);
 
-    //TUNING
+    //TUNING SECTION. Remove comments if you want to tune the device. Edit the limits
+    //array, and connect a button however you like.
     /*
     float limits[4];
     limits[0] = 0.1; limits[1] = 1.1;
     limits[2] = 1.0; limits[3] = 8;
-    //tune(&PgainRoll, &DgainRoll, limits);
+    tune(&PgainRoll, &DgainRoll, limits);
+    buttonState = digitalRead(buttonPin);
+    if (buttonState == HIGH && previousState == LOW)
+      {
+      Serial.println(PgainRoll); Serial.println(DgainRoll);
+      }
+    previousState = buttonState;
     */
   }
 //-----FUNCTION DECLARATIONS-----//
 void sense(MikroeAccel202 * ACCEL){
+  /*this function is dumb and probably has no reason to exist */
   ACCEL->read();
   ACCEL->calcRoll();
   ACCEL->calcPitch();
 }
 
 void tune(float * Pgain, float * Dgain, float * limits){
- /* Function for manual tuning of the PD control.
+  /* Function for manual tuning of the PD control.
     *limits -> an array of floats, must be 4 long
     limits[0] = lowerLimitP
     limits[1] = upperLimitP
