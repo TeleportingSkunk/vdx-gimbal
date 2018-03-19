@@ -1,102 +1,126 @@
 #include <Arduino.h>
 #include <MikroeAccel202.h>
 #include <Servo.h>
-
+//-----PINS------//
 const int pinX = A0;
 const int pinY = A1;
 const int pinZ = A2;
+const int servoRollPin = 5;
+const int servoPitchPin = 3;
+
+//TUNING PINS
 const int potPin1 = A3;
 const int potPin2 = A4;
-const int servoRollPin = 3;
-const int servoPitchPin = 5;
 const int buttonPin = 18;
+
+//-----VARIABLES-----//
+
+/* Object init block. MikroeAccel202 is a custom library for interfacing with the
+  ADXL335 for the Mikroelektronika 2.02 breakout board*/
 Servo servoRoll;
 Servo servoPitch;
-/*
-int LUTservo[32] = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155];
-
-float LUTplatform[32] = [-36.602, -34.067, -31.426, -28.692, -25.880, -23.003, -20.074, -17.108, -14.118, -11.118, -8.121, -5.141, -2.193, 0.710, 3.556, 6.328, 9.015,
-                            11.602, 14.076, 16.423, 18.628, 20.679, 22.562, 24.263, 25.767, 27.063, 28.135, 28.970, 29.554, 29.874, 29.915, 29.665];
-*/
-
 MikroeAccel202 accel(pinX, pinY, pinZ);
-unsigned int microWriteRoll = 1500;
-unsigned int microWritePitch = 1500;
-
-void sense(MikroeAccel202 * ACCEL);
-
-float gainRoll = 0.3; //tuned
-float gainPitch = 0.6;
-float controlSignalRoll, controlSignalPitch;
-float rollBuff[5] = {0};
+float rollBuff[5] = {0}; //data buffers
 float pitchBuff[5] = {0};
-float TdRoll = 5.5; //tuned
-float TdPitch = 5.5;
-int buttonState;
-int prevState = LOW;
 
+/* This block contains EXPERIMENTALLY gleaned values regarding the maximum and minimum
+   strokes of the servos(limited by the gimbal mechanism itself)
+   Expressed as the width of the PWM ON portion in microseconds.*/
+unsigned int roll_L = 250;
+unsigned int roll_H = 1900;
+unsigned int pitch_L = 250;
+unsigned int pitch_H = 1900;
+
+/* Initial values for servo positions */
+unsigned int pulseWidthRoll = 1500;
+unsigned int pulseWidthPitch = 1500;
+
+/* Control system parameters block. All values MUST be tuned experimentally using
+the provided tune() function and potentiometer inputs to A3 & A4. */
+float errorSignalRoll, errorSignalPitch; //measured error value based on accel readings.
+float PgainRoll = 0.6; //proportional gain for the roll servo
+float PgainPitch = 0.3; //proportional gain for the pitch servo
+float DgainRoll = 5.5; //tuned
+float DgainPitch = 5.5;
+
+//int buttonState;
+//int prevState = LOW;
+
+//-----PROTOTYPES-----//
 void sense(MikroeAccel202 * ACCEL);
+void tune();
 
 void setup()
 {
+  //CORE FUNCTIONALITIES
   servoRoll.attach(servoRollPin); //~~10us/deg
   servoPitch.attach(servoPitchPin);
-  Serial.begin(9600);
-  servoRoll.writeMicroseconds(microWriteRoll);
-  servoPitch.writeMicroseconds(microWritePitch);
-  //pinMode(potPin1, INPUT);
+  servoRoll.writeMicroseconds(pulseWidthRoll); //initial positions.
+  servoPitch.writeMicroseconds(pulseWidthPitch);
 
+  //TUNING
+  Serial.begin(9600);
+  pinMode(potPin1, INPUT);
+  pinMode(potPin2, INPUT);
   pinMode(buttonPin, INPUT);
-  delay(1000);
+
+  delay(200);
 }
 
 void loop()
 {
     sense(&accel);
-    rollBuff[0] = rollBuff[1];
-    rollBuff[1] = rollBuff[2];
-    rollBuff[2] = rollBuff[3];
-    rollBuff[3] = rollBuff[4];
-    if (abs(accel.pitch) < 0.3)
-      rollBuff[4] = 0;
-    else
-      rollBuff[4] = accel.pitch;
-    gainRoll = (2.5 - analogRead(potPin1)*0.00244 + .5);
-    //TdRoll = (1023-analogRead(potPin2))/70.;
-
-    controlSignalRoll = gainRoll*rollBuff[4] + (rollBuff[4] - rollBuff[3])*TdRoll;
-    if (!isnan(accel.pitch)) {
-      if ( (microWriteRoll-controlSignalRoll) < 0) microWriteRoll = 0;
-      else if (microWriteRoll - controlSignalRoll >= 1750) microWriteRoll = 1750;
-      else microWriteRoll -= (int)controlSignalRoll;
-
-    }
-    servoRoll.writeMicroseconds(microWriteRoll);
 
     pitchBuff[0] = pitchBuff[1];
     pitchBuff[1] = pitchBuff[2];
     pitchBuff[2] = pitchBuff[3];
+    pitchBuff[3] = pitchBuff[4];
+    if (abs(accel.pitch) < 0.5)
+      pitchBuff[4] = 0;
+    else
+      pitchBuff[4] = accel.pitch;
 
+    //PgainRoll = (2.5 - analogRead(potPin1)*0.00244 + .5);
+    //DgainRoll = (1023-analogRead(potPin2))/70.;
+
+    errorSignalRoll = PgainRoll*rollBuff[4] + (rollBuff[4] - rollBuff[3])*DgainRoll;
+    if (!isnan(accel.pitch)) {
+      if ( (pulseWidthRoll-errorSignalRoll) < 0) pulseWidthRoll = 0;
+      else if (pulseWidthRoll - errorSignalRoll >= 1750) pulseWidthRoll = 1750;
+      else pulseWidthRoll -= (int)errorSignalRoll;
+
+    }
+    servoRoll.writeMicroseconds(pulseWidthRoll);
+
+    rollBuff[0] = rollBuff[1];
+    rollBuff[1] = rollBuff[2];
+    rollBuff[2] = rollBuff[3];
+    rollBuff[3] = rollBuff[4];
+    if (abs(accel.roll) < 0.5)
+      pitchBuff[4] = 0;
+    else
       pitchBuff[4] = -accel.roll;
 
-    controlSignalPitch = gainPitch*pitchBuff[4] + (pitchBuff[4] - pitchBuff[3])*TdPitch;
+    errorSignalPitch = PgainPitch*pitchBuff[4] + (pitchBuff[4] - pitchBuff[3])*DgainPitch;
     if (!isnan(accel.roll)){
-      if( (microWritePitch - controlSignalPitch) < 0) microWritePitch = 0;
-      else if (microWritePitch - controlSignalPitch >= 1900) microWritePitch = 1900;
-      else microWritePitch -= (int)controlSignalPitch;
+      if( (pulseWidthPitch - errorSignalPitch) < 0) pulseWidthPitch = 0;
+      else if (pulseWidthPitch - errorSignalPitch >= 1900) pulseWidthPitch = 1900;
+      else pulseWidthPitch -= (int)errorSignalPitch;
     }
-    servoPitch.writeMicroseconds(microWritePitch);
+    servoPitch.writeMicroseconds(pulseWidthPitch);
     //Serial.print(accel.roll); Serial.print("\t"); Serial.print(accel.pitch); Serial.print("\n");
 
-    buttonState = digitalRead(buttonPin);
+    /*buttonState = digitalRead(buttonPin);
     if ( buttonState == HIGH && prevState == LOW){
-      Serial.println(gainRoll);
+      Serial.println(PgainRoll);
     }
 
     prevState = buttonState;
     delay(3);
     }
-
+    */
+  }
+//-----FUNCTION DECLARATIONS-----//
 void sense(MikroeAccel202 * ACCEL){
   ACCEL->read();
   ACCEL->calcRoll();
