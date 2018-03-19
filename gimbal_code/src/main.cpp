@@ -2,14 +2,14 @@
 #include <MikroeAccel202.h>
 #include <Servo.h>
 
-int pinX = A0;
-int pinY = A1;
-int pinZ = A2;
-int potPin1 = A3;
-int potPin2 = A4;
-int servoRollPin = 3; //rename
-int servoPitchPin = 5; //rename
-int buttonPin = 18;
+const int pinX = A0;
+const int pinY = A1;
+const int pinZ = A2;
+const int potPin1 = A3;
+const int potPin2 = A4;
+const int servoRollPin = 3;
+const int servoPitchPin = 5;
+const int buttonPin = 18;
 Servo servoRoll;
 Servo servoPitch;
 /*
@@ -22,6 +22,7 @@ float LUTplatform[32] = [-36.602, -34.067, -31.426, -28.692, -25.880, -23.003, -
 MikroeAccel202 accel(pinX, pinY, pinZ);
 unsigned int microWriteRoll = 1500;
 unsigned int microWritePitch = 1500;
+
 void sense(MikroeAccel202 * ACCEL);
 
 float gainRoll = 0.3; //tuned
