@@ -1,9 +1,9 @@
-# Two-Axis Camera Stabiliser w/ 9g Servos
+# Two-Axis Camera Stabiliser
 
 Made during my internship at [Vision Dynamix](http://www.visiondynamix.com), this gimbal is intended for quad/hexacopter mounting. Using an ADXL335 breakout board and an Arduino Nano, the algorithm constantly drives the error signals to 0 by modulating the duration of the PWM impulses (in uS).
 
 ## Software
-Two config branches exist: Master is for the PlatformIO IDE for embedded & IoT, while the ARDUINO_IDE branch is for Arduino's official IDE.
+Two config branches exist: Master is for the Atom-based PlatformIO IDE for Embedded & IoT, while the ARDUINO_IDE branch is for Arduino's official IDE.
 
 Information regarding Atom and PlatformIO can be found here:
 * <http://atom.io>
@@ -13,7 +13,7 @@ Arduino's IDE can be found here:
 * <http://arduino.cc>
 
 ## Libraries & Dependencies
-I've written a library for interfacing with Mikroelektronika's ADXL330/335 breakout board. A local version is included in the git itself, but you can fork the git itself [here](https://github.com/TeleportingSkunk/MikroeAccel202).  
+I've written a library for interfacing with Mikroelektronika's ADXL330/335 breakout board. A local version is included in this repo, but you can fork the git itself [here](https://github.com/TeleportingSkunk/MikroeAccel202).
 
 ## Hardware
 * 1 x *[Arduino Nano](https://www.aliexpress.com/item/NANO-3-0-controlador-compatible-con-arduino-nano-CH340-turno-USB-controlador-ninguna-CABLE-V3-0/32844003582.html?spm=2114.search0104.3.15.6ab62b20etyeSU&ws_ab_test=searchweb0_0,searchweb201602_3_10152_10151_10065_10068_10344_10342_10343_10340_10341_10696_10084_10083_10618_10307_5711215_10313_10059_10534_100031_10103_10624_10623_443_10622_10621_10620,searchweb201603_1,ppcSwitch_5&algo_expid=f47ce800-4edd-4ce2-ad9a-dbfdfd89b4da-5&algo_pvid=f47ce800-4edd-4ce2-ad9a-dbfdfd89b4da&transAbTest=ae803_4&priceBeautifyAB=0)*
@@ -59,7 +59,7 @@ To tune the system:
    * [Github](http://github.com/TeleportingSkunk)
    * [LinkedIn](https://www.linkedin.com/in/marko-galevski/)
 * Tomislav Dimitrievski - Thanks for the help with improving the PCB design
-* Stole Jovanovski - Thanks for developing the mean filter library, and general advice
+* Stole Jovanovski - Thanks for developing the mean filter library and for your help in general
    * [LinkedIn](https://www.linkedin.com/in/stole-jovanovski/)
 
 ## About ***Vision Dynamix***
