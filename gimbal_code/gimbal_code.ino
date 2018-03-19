@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <MikroeAccel202.h>
 #include <Servo.h>
 //-----PINS------//
